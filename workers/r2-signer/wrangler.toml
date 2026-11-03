@@ -1,0 +1,33 @@
+name = "avtube-r2-signer"
+main = "src/worker.js"
+compatibility_date = "2026-10-28"
+
+[vars]
+R2_BUCKET_NAME = "avtube-media"
+FIREBASE_DATABASE_URL = "https://av-tube-6e417-default-rtdb.asia-southeast1.firebasedatabase.app"
+
+# Reel encoding pipeline. Leave "false" until an encoder service (workers/video-encoder) is deployed and
+# the ENCODER_TOKEN secret is set (`wrangler secret put ENCODER_TOKEN`).
+VIDEO_ENCODING_ENABLED = "false"
+# Optional: custom/CDN origin that fronts this Worker, e.g. "https://media.example.com". Unset = Worker origin.
+# PUBLIC_MEDIA_ORIGIN = ""
+
+[[r2_buckets]]
+binding = "AVTUBE_MEDIA"
+bucket_name = "avtube-media"
+
+[[containers]]
+class_name = "AvTubeEncoderContainer"
+image = "../video-encoder"
+max_instances = 1
+
+[[durable_objects.bindings]]
+name = "AVTUBE_ENCODER"
+class_name = "AvTubeEncoderContainer"
+
+[exports.AvTubeEncoderContainer]
+type = "durable-object"
+storage = "sqlite"
+
+[triggers]
+crons = ["* * * * *"]

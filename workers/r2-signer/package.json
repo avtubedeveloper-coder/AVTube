@@ -1,0 +1,9 @@
+{
+  "name": "avtube-r2-signer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate:story-index": "node scripts/migrate-story-visibility-index.mjs",
+    "test": "node --test"
+  }
+}
